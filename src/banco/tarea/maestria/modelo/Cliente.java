@@ -10,17 +10,10 @@ import java.util.ArrayDeque;
  * @author lcampo
  *
  */
-public class Evento {
-	private String tipoEvento;
+public class Cliente {
 	private LocalTime hora;
 	private int duracion;
 	private ArrayDeque<Cliente> cola;
-	public String getTipoEvento() {
-		return tipoEvento;
-	}
-	public void setTipoEvento(String tipoEvento) {
-		this.tipoEvento = tipoEvento;
-	}
 	public LocalTime getHora() {
 		return hora;
 	}
@@ -38,5 +31,6 @@ public class Evento {
 	}
 	public void setCola(ArrayDeque<Cliente> cola) {
 		this.cola = cola;
-	}	
+	}
+	
 }

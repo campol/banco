@@ -3,29 +3,40 @@
  */
 package banco.tarea.maestria.principal;
 
-import java.time.LocalDateTime;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.net.URL;
 import java.time.LocalTime;
-import java.time.Month;
+import java.util.PriorityQueue;
+
+import banco.tarea.maestria.modelo.Evento;
 
 /**
  * @author lcampo
  *
  */
 public class FlujoBanco {
-
+	private PriorityQueue<Evento> colaEventos;
+	 public static void crearColaEventos(String archivo) throws FileNotFoundException, IOException {
+	        String cadena;
+	        FileReader f = new FileReader(archivo);
+	        BufferedReader b = new BufferedReader(f);
+	        while((cadena = b.readLine())!=null) {
+	            System.out.println(cadena);
+	        }
+	        b.close();
+	    }
 	/**
 	 * @param args
+	 * @throws IOException 
+	 * @throws FileNotFoundException 
 	 */
-	public static void main(String[] args) {
-		LocalDateTime ahora = LocalDateTime.now(); 
-	       System.out.printf("La hora es: %s%n", ahora); 
-	       LocalDateTime algunDia = LocalDateTime.of(1976, Month.MARCH, 27, 6, 10); 
-	       System.out.printf("Yo nací el %s%n", algunDia); 
-	       System.out.printf("Hace seis meses fue %s%n", LocalDateTime.now().minusMonths(6)); 
-	       
-	       LocalTime justoAhora = LocalTime.now(); 
-	       System.out.printf("En este momento son las %d horas con %d minutos y %d segundos\n", justoAhora.getHour(),  
-	       justoAhora.getMinute(), justoAhora.getSecond()); 
+	public static void main(String[] args) throws FileNotFoundException, IOException {
+		LocalTime horaAbrir = LocalTime.now();
+		URL url = FlujoBanco.class.getResource("/llegada.txt");
+		crearColaEventos(url.getFile()); 
 	}
 
 }

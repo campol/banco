@@ -18,13 +18,27 @@ import banco.tarea.maestria.modelo.Evento;
  *
  */
 public class FlujoBanco {
-	private PriorityQueue<Evento> colaEventos;
+	private static PriorityQueue<Evento> colaEventos;
+	private static final String LLEGADA = "LLEGADA";
+	private static final String SALIDA = "SALIDA";
+	
+	private static LocalTime horaAbrir = LocalTime.now();
 	 public static void crearColaEventos(String archivo) throws FileNotFoundException, IOException {
 	        String cadena;
 	        FileReader f = new FileReader(archivo);
 	        BufferedReader b = new BufferedReader(f);
+	        Evento eventoLLegada = null;
+	        colaEventos = new PriorityQueue<Evento>();
 	        while((cadena = b.readLine())!=null) {
-	            System.out.println(cadena);
+	            String[] c = cadena.split(" ");
+	            int minLlegada = Integer.parseInt(c[0]);
+	            int duracionOper = Integer.parseInt(c[1]);
+	            eventoLLegada = new Evento();
+	            eventoLLegada.setTipoEvento(LLEGADA);
+	            eventoLLegada.setHora(horaAbrir.plusMinutes(minLlegada));
+	            eventoLLegada.setDuracion(duracionOper);
+	            colaEventos.add(eventoLLegada);
+	            System.out.println("Hora llegada cliente: "+eventoLLegada.getHora());
 	        }
 	        b.close();
 	    }
@@ -34,7 +48,6 @@ public class FlujoBanco {
 	 * @throws FileNotFoundException 
 	 */
 	public static void main(String[] args) throws FileNotFoundException, IOException {
-		LocalTime horaAbrir = LocalTime.now();
 		URL url = FlujoBanco.class.getResource("/llegada.txt");
 		crearColaEventos(url.getFile()); 
 	}

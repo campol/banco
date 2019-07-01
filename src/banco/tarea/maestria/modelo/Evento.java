@@ -10,7 +10,7 @@ import java.util.ArrayDeque;
  * @author lcampo
  *
  */
-public class Evento {
+public class Evento  implements Comparable<Evento> {
 	private String tipoEvento;
 	private LocalTime hora;
 	private int duracion;
@@ -38,5 +38,14 @@ public class Evento {
 	}
 	public void setCola(ArrayDeque<Cliente> cola) {
 		this.cola = cola;
+	}
+	
+	@Override
+	public String toString() {
+		return "Evento [tipoEvento=" + tipoEvento + ", hora=" + hora + ", duracion=" + duracion + "]";
+	}
+	@Override
+	public int compareTo(Evento o) {
+		return this.hora.compareTo(o.getHora());
 	}	
 }

@@ -8,7 +8,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
+import java.time.Duration;
 import java.time.LocalTime;
+import java.time.Period;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,6 +30,9 @@ public class FlujoBanco {
 	private static final String SALIDA = "SALIDA";
 	private static List<ArrayDeque<Cliente>> listaCajeros;
 	private static LocalTime horaAbrir = LocalTime.now();
+	private static long acumLongitudColas;
+	private static long acumTiempoBanco;
+	private static int cantClientes;
 	 public static void crearColaEventos(String archivo) throws FileNotFoundException, IOException {
 	        String cadena;
 	        FileReader f = new FileReader(archivo);
@@ -64,19 +69,32 @@ public class FlujoBanco {
 		 cliente.setDuracion(duracion);
 		 cliente.setHora(horaLlegada);
 		 if(cola.isEmpty()) {
+			 cola.add(cliente);
 			 Evento evento = new Evento();
 			 evento.setCola(cola);
 			 evento.setTipoEvento(SALIDA);
 			 evento.setHora(horaLlegada.plusMinutes(duracion));
 			 colaEventos.add(evento);
-			 cola.add(cliente);
 		 } else {
 			 cola.add(cliente);
 		 }
 	 }
 	 
-	 private static void procesarSalida(LocalTime horaLlegada, ArrayDeque<Cliente> cola) {
-		 
+	 private static void procesarSalida(LocalTime horaSalida, ArrayDeque<Cliente> cola) {
+		 acumLongitudColas = acumLongitudColas + cola.size();
+		 Cliente cliente = cola.poll();
+		 Duration duracion = Duration.between(cliente.getHora(), horaSalida);
+		 long tiempoBanco = duracion.getSeconds();
+		 cantClientes++;
+		 acumTiempoBanco = acumTiempoBanco + tiempoBanco; 
+		 if(!cola.isEmpty()) {
+			 Cliente pCliente = cola.peek();
+			 Evento evento = new Evento();
+			 evento.setCola(cola);
+			 evento.setTipoEvento(SALIDA);
+			 evento.setHora(horaSalida.plusMinutes(pCliente.getDuracion()));
+			 colaEventos.add(evento);
+		 }
 	 }
 	 private static ArrayDeque<Cliente> getColaMasCorta(){
 		 int tamColaMasCorta = listaCajeros.get(0).size();
@@ -95,6 +113,9 @@ public class FlujoBanco {
 	 * @throws FileNotFoundException 
 	 */
 	public static void main(String[] args) throws FileNotFoundException, IOException {
+		cantClientes = 0;
+		acumTiempoBanco = 0;
+		acumLongitudColas = 0;
 		URL url = FlujoBanco.class.getResource("/llegada.txt");
 		crearColaEventos(url.getFile()); 
 		listaCajeros = crearColaCajeros(4);
@@ -104,13 +125,14 @@ public class FlujoBanco {
 			if(evento.getTipoEvento().equals(LLEGADA)) {
 				procesarLLegada(evento.getHora(), evento.getDuracion());
 			} else if(evento.getTipoEvento().equals(SALIDA)) {
-				
-			}
-			
+				procesarSalida(evento.getHora(), evento.getCola());
+			}	
 		}
-//		for(Evento evento: colaEventos) {
-//			
-//		}
+		double tiempoPromBancoCliente = acumTiempoBanco / cantClientes;
+		double longPromColas = acumLongitudColas / cantClientes;
+		System.out.println("El tiempo promedio que permanecio un cliente en el banco es: "+tiempoPromBancoCliente);
+		System.out.println("La longitud promedio de las colas es: "+longPromColas);
+		
 	}
 
 }

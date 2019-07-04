@@ -8,14 +8,14 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.LocalTime;
-import java.time.Period;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Scanner;
 
 import banco.tarea.maestria.modelo.Cliente;
 import banco.tarea.maestria.modelo.Evento;
@@ -30,9 +30,9 @@ public class FlujoBanco {
 	private static final String SALIDA = "SALIDA";
 	private static List<ArrayDeque<Cliente>> listaCajeros;
 	private static LocalTime horaAbrir = LocalTime.now();
-	private static long acumLongitudColas;
-	private static long acumTiempoBanco;
-	private static int cantClientes;
+	private static double acumLongitudColas;
+	private static double acumTiempoBanco;
+	private static double cantClientes;
 	 public static void crearColaEventos(String archivo) throws FileNotFoundException, IOException {
 	        String cadena;
 	        FileReader f = new FileReader(archivo);
@@ -112,26 +112,35 @@ public class FlujoBanco {
 	 * @throws IOException 
 	 * @throws FileNotFoundException 
 	 */
-	public static void main(String[] args) throws FileNotFoundException, IOException {
-		cantClientes = 0;
-		acumTiempoBanco = 0;
-		acumLongitudColas = 0;
-		URL url = FlujoBanco.class.getResource("/llegada.txt");
+	public static void main(String[] args) throws Exception {
+		DecimalFormat df = new DecimalFormat("##.##");
+		cantClientes = 0.0;
+		acumTiempoBanco = 0.0;
+		acumLongitudColas = 0.0;
+		System.out.println("Por favor ingrese el nombre del archivo(con su extensión) que contiene la llegada de los clientes:");
+		Scanner scanner = new Scanner(System.in);
+		String nombreArchivo = scanner.nextLine();
+		URL url = FlujoBanco.class.getResource("/"+nombreArchivo);
 		crearColaEventos(url.getFile()); 
-		listaCajeros = crearColaCajeros(4);
+		System.out.println("Por favor ingrese la cantidad de cajeros que desea crear:");
+		int cantidadCajeros = scanner.nextInt();
+		listaCajeros = crearColaCajeros(cantidadCajeros);
 		Evento evento = null;
 		while(colaEventos.size() != 0) {
 			evento = colaEventos.poll();
 			if(evento.getTipoEvento().equals(LLEGADA)) {
+				System.out.println(evento);
 				procesarLLegada(evento.getHora(), evento.getDuracion());
 			} else if(evento.getTipoEvento().equals(SALIDA)) {
+				System.out.println(evento);
 				procesarSalida(evento.getHora(), evento.getCola());
 			}	
 		}
 		double tiempoPromBancoCliente = acumTiempoBanco / cantClientes;
+		double tiempoMinutos = tiempoPromBancoCliente/60.0;
 		double longPromColas = acumLongitudColas / cantClientes;
-		System.out.println("El tiempo promedio que permanecio un cliente en el banco es: "+tiempoPromBancoCliente);
-		System.out.println("La longitud promedio de las colas es: "+longPromColas);
+		System.out.println("El tiempo promedio que permanecio un cliente en el banco es: "+df.format(tiempoMinutos)+" Minutos");
+		System.out.println("La longitud promedio de las colas es: "+df.format(longPromColas));
 		
 	}
 

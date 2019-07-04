@@ -32,5 +32,9 @@ public class Cliente {
 	public void setCola(ArrayDeque<Cliente> cola) {
 		this.cola = cola;
 	}
+	@Override
+	public String toString() {
+		return "Cliente [hora=" + hora + ", duracion=" + duracion + "]";
+	}
 	
 }

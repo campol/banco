@@ -4,6 +4,7 @@
 package banco.tarea.maestria.principal;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -119,11 +120,41 @@ public class FlujoBanco {
 		acumLongitudColas = 0.0;
 		System.out.println("Por favor ingrese el nombre del archivo(con su extensión) que contiene la llegada de los clientes:");
 		Scanner scanner = new Scanner(System.in);
+		int reintento = 0;
 		String nombreArchivo = scanner.nextLine();
 		URL url = FlujoBanco.class.getResource("/"+nombreArchivo);
+		while(url ==  null && reintento < 3) {
+			System.out.println("El archivo no existe, por  favor ingrese el nombre correcto.");
+			nombreArchivo = scanner.nextLine();
+			url = FlujoBanco.class.getResource("/" + nombreArchivo);
+			reintento++;
+		}
+		if(url == null) {
+			System.out.println("El archivo no se encuentra. Programa terminado.");
+			return;
+		}
 		crearColaEventos(url.getFile()); 
-		System.out.println("Por favor ingrese la cantidad de cajeros que desea crear:");
-		int cantidadCajeros = scanner.nextInt();
+		
+		int cantidadCajeros = 0;
+		reintento = 0;
+		while(reintento < 3) {
+			try {
+				System.out.println("Por favor ingrese la cantidad de cajeros que desea crear:");
+				cantidadCajeros = Integer.parseInt(scanner.nextLine());
+				if(cantidadCajeros <= 0) {
+					System.out.println("Cantidad de cajeros invalida. Programa terminado.");
+					return;
+				}
+				break;
+			}catch(Exception ex) {
+				System.out.println("Cantidad de cajeros invalida. Por favor ingrese una cantidad valida.");
+				reintento++;
+			}
+		}
+		if(reintento == 3) {
+			System.out.println("Cantidad de cajeros invalida. Programa terminado.");
+			return;
+		}
 		listaCajeros = crearColaCajeros(cantidadCajeros);
 		Evento evento = null;
 		while(colaEventos.size() != 0) {
@@ -138,10 +169,8 @@ public class FlujoBanco {
 		}
 		double tiempoPromBancoCliente = acumTiempoBanco / cantClientes;
 		double tiempoMinutos = tiempoPromBancoCliente/60.0;
-		double longPromColas = acumLongitudColas / cantClientes;
+		double longPromColas = Math.round(acumLongitudColas / cantClientes);
 		System.out.println("El tiempo promedio que permanecio un cliente en el banco es: "+df.format(tiempoMinutos)+" Minutos");
 		System.out.println("La longitud promedio de las colas es: "+df.format(longPromColas));
-		
 	}
-
 }

@@ -4,7 +4,6 @@
 package banco.tarea.maestria.principal;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -34,6 +33,12 @@ public class FlujoBanco {
 	private static double acumLongitudColas;
 	private static double acumTiempoBanco;
 	private static double cantClientes;
+	/**
+	 * Crea la cola de eventos de llegada desde el archivo
+	 * @param archivo - Nombre del archivo que contiene las llegadas de los clientes
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
 	 public static void crearColaEventos(String archivo) throws FileNotFoundException, IOException {
 	        String cadena;
 	        FileReader f = new FileReader(archivo);
@@ -53,6 +58,11 @@ public class FlujoBanco {
 	        }
 	        b.close();
 	    }
+	 /**
+	  * Crea una lista de cola de cajeros
+	  * @param cantidadCajeros - Cantidad de cajeros a crear
+	  * @return List<ArrayDeque<Cliente>>
+	  */
 	 private static List<ArrayDeque<Cliente>> crearColaCajeros(int cantidadCajeros){
 		 List<ArrayDeque<Cliente>> listaCajeros = new ArrayList<ArrayDeque<Cliente>>();
 		 ArrayDeque<Cliente> colaCajero = null;
@@ -62,7 +72,11 @@ public class FlujoBanco {
 		 }
 		 return listaCajeros;
 	 }
-	 
+	 /**
+	  * Procesa la llegada de un cliente
+	  * @param horaLlegada
+	  * @param duracion
+	  */
 	 private static void procesarLLegada(LocalTime horaLlegada, int duracion) {
 		 ArrayDeque<Cliente> cola = getColaMasCorta();
 		 Cliente cliente = new Cliente();
@@ -80,7 +94,11 @@ public class FlujoBanco {
 			 cola.add(cliente);
 		 }
 	 }
-	 
+	 /**
+	  * Procesa la salida de un cliente
+	  * @param horaSalida
+	  * @param cola
+	  */
 	 private static void procesarSalida(LocalTime horaSalida, ArrayDeque<Cliente> cola) {
 		 acumLongitudColas = acumLongitudColas + cola.size();
 		 Cliente cliente = cola.poll();
@@ -97,6 +115,10 @@ public class FlujoBanco {
 			 colaEventos.add(evento);
 		 }
 	 }
+	 /**
+	  * Devuelve la cola mas corta
+	  * @return ArrayDeque<Cliente>
+	  */
 	 private static ArrayDeque<Cliente> getColaMasCorta(){
 		 int tamColaMasCorta = listaCajeros.get(0).size();
 		 int indiceColaMasCorta = 0;
@@ -109,6 +131,7 @@ public class FlujoBanco {
 		 return listaCajeros.get(indiceColaMasCorta);
 	 }
 	/**
+	 * Simulacion de atencion de clientes de un banco
 	 * @param args
 	 * @throws IOException 
 	 * @throws FileNotFoundException 

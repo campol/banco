@@ -29,6 +29,7 @@ public class FlujoBanco {
 	private static final String LLEGADA = "LLEGADA";
 	private static final String SALIDA = "SALIDA";
 	private static List<ArrayDeque<Cliente>> listaCajeros;
+	//La hora en la que abre el Banco
 	private static LocalTime horaAbrir = LocalTime.now();
 	private static double acumLongitudColas;
 	private static double acumTiempoBanco;
@@ -137,6 +138,7 @@ public class FlujoBanco {
 	 * @throws FileNotFoundException 
 	 */
 	public static void main(String[] args) throws Exception {
+		System.out.println("El banco abrió a las "+horaAbrir);
 		DecimalFormat df = new DecimalFormat("##.##");
 		cantClientes = 0.0;
 		acumTiempoBanco = 0.0;
